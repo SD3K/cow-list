@@ -4,10 +4,20 @@ const path = require('path');
 const PORT = 3000;
 const app = express();
 
-app.use(express.static(path.join(__dirname, '..', 'public')));
+const db = require('../database/index.js');
 
-app.get('/', (req, res) => {
-  res.send('Hello from the server!');
+app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
+
+app.get('/showMeCow', (req, res) => {
+  db.connection.query('SELECT * FROM cows', (err, cows) => {
+    if (err) {
+      res.status(500).send();
+    } else {
+      res.status(200).send(cows);
+    }
+  })
 })
 
 app.listen(PORT, () => {
